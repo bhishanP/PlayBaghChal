@@ -11,12 +11,6 @@ line_width = 4
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('Tiger Game')
 
-
-
-# clock = pygame.time.Clock()
-
-
-
 # define colours
 red = (255, 0, 0)
 green = (0, 255, 0)
@@ -66,12 +60,12 @@ goats = []
 
 # only valid moves for each position
 moves = {
-    (0, 0): [(0, 1), (1, 0), (1, 1)],  # ,(2,0),(0,2)
-    (0, 1): [(0, 0), (1, 1), (0, 2)],  # ,(2,1)
-    (0, 2): [(0, 1), (1, 1), (1, 2), (1, 3), (0, 3)],  # ,(2,2),(2,0),(2,4)
-    (0, 3): [(0, 2), (1, 3), (0, 4)],  # ,(0,1),(2,3)
-    (0, 4): [(0, 3), (1, 3), (1, 4)],  # ,(2,2),(2,4)
-    (1, 0): [(0, 0), (1, 1), (2, 0)],  # ,(1,2),(3,0)
+    (0, 0): [(0, 1), (1, 0), (1, 1)], 
+    (0, 1): [(0, 0), (1, 1), (0, 2)], 
+    (0, 2): [(0, 1), (1, 1), (1, 2), (1, 3), (0, 3)],
+    (0, 3): [(0, 2), (1, 3), (0, 4)], 
+    (0, 4): [(0, 3), (1, 3), (1, 4)], 
+    (1, 0): [(0, 0), (1, 1), (2, 0)],
     (1, 1): [(0, 0), (0, 1), (0, 2), (1, 0), (1, 2), (2, 0), (2, 1), (2, 2)],
     (1, 2): [(0, 2), (1, 1), (1, 3), (2, 2)],
     (1, 3): [(0, 2), (0, 3), (0, 4), (1, 2), (1, 4), (2, 2), (2, 3), (2, 4)],
@@ -274,16 +268,6 @@ def place_goat(position):
         goats_outside -= 1
         return True
     return False
-
-def display_winner():
-    if winner == 'Tigers':
-        # screen.blit(tiger_win_img, (0, 0))
-        tiger_win_button.draw(screen)
-        play_again_button.draw(screen)
-    elif winner == 'Goats':
-        # screen.blit(goat_win_img, (0, 0))
-        goat_win_button.draw(screen)
-        play_again_button.draw(screen)
 
 
 def is_trap_tiger():

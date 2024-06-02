@@ -254,6 +254,8 @@ def move_goat(start, end):
         x2, y2 = end
         board[x1][y1] = ''
         board[x2][y2] = 'G'
+        goats.append((x2, y2))
+        goats.remove((x1, y1))
         return True
     return False
 

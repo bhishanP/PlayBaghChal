@@ -1,7 +1,7 @@
 # import modules
 import pygame
 from pygame.locals import *
-import button
+import button #only for Menu
 
 pygame.init()
 
@@ -11,10 +11,7 @@ line_width = 4
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption('Tiger Game')
 
-# define colours
-red = (255, 0, 0)
-green = (0, 255, 0)
-blue = (0, 0, 255)
+# define colours in RGB
 black = (0, 0, 0)
 white = (255, 255, 255)
 placeholder_color = (200, 200, 200)
@@ -25,15 +22,15 @@ font = pygame.font.SysFont(None, 40)
 # define variables
 turn = "Goats"
 game_over = False
-winner = 0
+winner = ""
 game_start = False
 tigers_cornered = 0
 goats_captured = 0
 goats_outside = 20
 
 # Load images
-tiger_img = pygame.image.load('Images/tiger.png')
-goat_img = pygame.image.load('Images/goat.png')
+tiger_img = pygame.image.load('Images/tiger.png').convert_alpha()
+goat_img = pygame.image.load('Images/goat.png').convert_alpha()
 quit_img = pygame.image.load('Images/Quit.png').convert_alpha()
 start_img = pygame.image.load('Images/Start.png').convert_alpha()
 tiger_win_img = pygame.image.load('Images/Tiger_win.png').convert_alpha()
@@ -56,7 +53,7 @@ play_again_button = button.Button(200, 300, play_again_img, 0.5)
 
 
 tiger_pos = [(0, 0), (0, 4), (4, 0), (4, 4)]
-goats = []
+goats = [] #lists the position of goats
 
 # only valid moves for each position
 moves = {
@@ -164,7 +161,7 @@ def draw_board():
         for col in range(5):
             if board[row][col] == 'T':
                 screen.blit(tiger_img, (spacing * col + spacing -
-                            20, spacing * row + spacing - 20))
+                            23, spacing * row + spacing - 24))
             elif board[row][col] == 'G':
                 screen.blit(goat_img, (spacing * col + spacing -
                             30, spacing * row + spacing - 28))
@@ -355,7 +352,7 @@ while run:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = event.pos
                 for center_x, center_y, row, col in placeholders:
-                    if (mouse_x - center_x) ** 2 + (mouse_y - center_y) ** 2 <= 10 ** 2:
+                    if (mouse_x - center_x) ** 2 + (mouse_y - center_y) ** 2 <= 15 ** 2:
                         # Clicked inside a placeholder circle
                         print(f"Clicked on placeholder at ({row}, {col}) and list is {click_pos}")
                         if turn == 'Goats':
@@ -365,7 +362,7 @@ while run:
                                     turn = 'Tigers'
                             elif goats_outside == 0:
                                 if len(click_pos) == 0 and board[row][col] == 'G':
-                                    print(f"Clicked goat on placeholder at ({row}, {col}, {board[row][col] == 'G'})")
+                                    print(f"Clicked goat at ({row}, {col})")
                                     click_pos.append((row, col))
                                 elif len(click_pos) == 1 and board[row][col] == '':
                                     click_pos.append((row, col))
@@ -373,8 +370,13 @@ while run:
                                     print(f"Clicked goat on placeholder at ({row}, {col}, move = yes)")
                                     if move_goat(*click_pos):
                                         click_pos.clear()
-                                        print("ohh yeah")
+                                        print("Ohh Yeah Goat moved")
                                         turn = 'Tigers'
+                                    else:
+                                        click_pos.pop()
+                                elif len(click_pos) == 1 and board[row][col] == 'G':
+                                    click_pos.clear()
+                                    click_pos.append((row, col))
                                 else:
                                     click_pos.clear()
                             is_trap_tiger()
@@ -382,21 +384,24 @@ while run:
 
                         elif turn == 'Tigers':
                             if len(click_pos) == 0 and board[row][col] == 'T':
-                                print(f"Clicked tigers on placeholder at ({
-                                      row}, {col}, {board[row][col] == 'T'})")
+                                print(f"Clicked tiger at ({row}, {col}, {board[row][col] == 'T'})")
                                 click_pos.append((row, col))
                             elif len(click_pos) == 1 and board[row][col] == '':
                                 click_pos.append((row, col))
                                 print(click_pos)
-                                print(f"Clicked tigers on placeholder at ({
-                                      row}, {col}, move = yes)")
+                                print(f"Clicked to move tiger at ({row}, {col}, move = yes)")
                                 if move_tiger(*click_pos):
                                     click_pos.clear()
-                                    print("ohh yeah")
+                                    print("ohh yeah Tiger Moved")
                                     turn = 'Goats'
+                                else:
+                                    click_pos.pop()
+                            elif len(click_pos) == 1 and board[row][col] == 'T':
+                                click_pos.clear()
+                                click_pos.append((row, col))
                             else:
                                 click_pos.clear()
-                            print(tiger_pos)
+                            print(f"The positions of tiger : {tiger_pos}")
 
     pygame.display.update()
 

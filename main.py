@@ -277,7 +277,7 @@ def is_trap_tiger():
         for move in moves[pos] + jumps[pos]:
             if board[move[0]][move[1]] == '':
                 break
-        else:
+        else: # if all moves are blocked(if break is not executed)
             tigers_cornered += 1
     print(f"Tigers cornered: {tigers_cornered}")
     if tigers_cornered == 4:

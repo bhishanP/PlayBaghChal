@@ -37,6 +37,7 @@ tiger_win_img = pygame.image.load('Images/Tiger_win.png').convert_alpha()
 goat_win_img = pygame.image.load('Images/Goat_win.png').convert_alpha()
 play_again_img = pygame.image.load('Images/Play_Again.png').convert_alpha()
 forest_img = pygame.image.load('Images/forest.png').convert_alpha()
+wood_img = pygame.image.load('Images/wood.jpg').convert_alpha()
 
 # Scale images to fit the board
 tiger_img = pygame.transform.scale(tiger_img, (50, 50))
@@ -123,6 +124,7 @@ def draw_board():
     bg = (200, 255, 210)
     grid = (50, 50, 50)
     spacing = 120
+    # screen.blit(bg_image, (spacing, spacing))
     screen.fill(bg)
     for x in range(1, 6):
         # rows and columns
@@ -214,7 +216,8 @@ def is_valid_jump(start, end):
     print(f"mid_x, mid_y {mid_x, mid_y} {board[mid_x][mid_y] != 'G'} {board[mid_x][mid_y]}")
     if board[mid_x][mid_y] != 'G':
         return False  # No goat to jump over
-    if (abs(x1 - x2) == 2 and abs(y1 - y2) == 2) or (abs(x1 - x2) == 2 and abs(y1 - y2) == 0) or (abs(x1 - x2) == 0 and abs(y1 - y2) == 2):
+    # if (abs(x1 - x2) == 2 and abs(y1 - y2) == 2) or (abs(x1 - x2) == 2 and abs(y1 - y2) == 0) or (abs(x1 - x2) == 0 and abs(y1 - y2) == 2):
+    if (x2, y2) in jumps[(x1, y1)]:
         return True  # Valid jump
     return False
 
@@ -237,7 +240,7 @@ def move_tiger(start, end):
                 board[mid_x][mid_y] = ''  # Remove jumped goat
                 goats.remove((mid_x, mid_y))
                 goats_captured += 1
-                if goats_captured == 7:
+                if goats_captured == 6:
                     game_over = True
                     print("Tigers won")
                     winner = 'Tigers'

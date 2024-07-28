@@ -50,6 +50,8 @@ The board is a 5x5 grid with additional diagonal lines connecting the corners, c
 
 Enjoy your game of Bagh Chal!
 ## Here's the some images of the game:
-![Screenshot 2024-06-02 131527](https://github.com/user-attachments/assets/fb6a9bc8-b254-4698-8395-215f8cb4f107)
-![Screenshot 2024-06-02 131537](https://github.com/user-attachments/assets/7d09f720-6642-4747-942e-8f17ffba1208)
-![Screenshot 2024-06-02 131602](https://github.com/user-attachments/assets/afdb2470-220a-432d-bbf5-7e161d98f4b8)
+![Screenshot 2024-06-02 131527](https://github.com/user-attachments/assets/befbe608-40eb-4393-ac93-4026896f9a1d)
+
+![Screenshot 2024-07-28 153722](https://github.com/user-attachments/assets/a0b79be7-289b-4fc7-ac2c-62053a43cdda)
+
+![Screenshot 2024-07-28 153745](https://github.com/user-attachments/assets/c200ca23-37a7-4204-81d7-535d7282009c)

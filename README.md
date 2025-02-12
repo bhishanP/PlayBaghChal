@@ -1,6 +1,11 @@
  # Bagh Chal
 
-Bagh Chal, also known as the Tiger Game or Tiger and Goat Game, is a traditional strategy game from Nepal. This will guide you through the game’s rules, setup, and objectives.
+Bagh-Chal (Nepali: बाघ चाल), also known as the Tiger Game or Tiger and Goat Game, is a traditional strategy game from Nepal. This will guide you through the game’s rules, setup, and objectives.
+
+## Requirements
+
+- Python > 3.9
+- Pygame
 
 ## Objective
 
@@ -21,6 +26,31 @@ The board is a 5x5 grid with additional diagonal lines connecting the corners, c
 1. **Tigers:** Start on the board in specific locations (typically at the four corners of the board).
 2. **Goats:** Start off the board and are introduced into the game one at a time.
 
+## Installation
+
+You can install the game using pip:
+
+```sh
+pip install PlayBaghChal
+```
+
+## Usage
+
+Run the game using:
+```py
+from playbaghchal.PlayGame import TigerGame
+
+# Create an instance of the game and run it
+game = TigerGame()
+game.run()
+```
+OR, Using Command line
+
+
+```sh
+python -m playbaghchal
+```
+
 ## Gameplay
 
 ### Tigers' Turn
@@ -32,6 +62,11 @@ The board is a 5x5 grid with additional diagonal lines connecting the corners, c
 
 - Goats are placed on empty intersections, one at a time, until all 20 goats are on the board.
 - After all goats are on the board, they can move to an adjacent intersection along the lines.
+
+
+## Controls
+
+- **Tigers and Goats movement**: Click on a piece and then on a valid position to move.
 
 ## Winning the Game
 
@@ -48,10 +83,16 @@ The board is a 5x5 grid with additional diagonal lines connecting the corners, c
 - The game requires careful planning and strategic thinking from both players.
 - The placement of goats can significantly influence the tigers' ability to capture or move.
 
+
+## License
+
+This project is licensed under the MIT License.
+
+## Contributing
+
+Pull requests are welcome! If you'd like to contribute, feel free to fork the repo and submit a PR.
+
+## Author
+
+Developed by **Bhishan Pangeni**. 🚀
 Enjoy your game of Bagh Chal!
-## Here's the some images of the game:
-![Screenshot 2024-06-02 131527](https://github.com/user-attachments/assets/befbe608-40eb-4393-ac93-4026896f9a1d)
-
-![Screenshot 2024-07-28 153722](https://github.com/user-attachments/assets/a0b79be7-289b-4fc7-ac2c-62053a43cdda)
-
-![Screenshot 2024-07-28 153745](https://github.com/user-attachments/assets/c200ca23-37a7-4204-81d7-535d7282009c)

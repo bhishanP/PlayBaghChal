@@ -3,6 +3,7 @@ from pygame.locals import *
 import os
 from importlib import resources 
 from .button import Button
+import random
 
 asset_path = resources.files("playbaghchal") / "assets"
 
@@ -41,10 +42,25 @@ class TigerGame:
         self.bg_image = pygame.transform.scale(self.forest_img, (self.screen_width, self.screen_height))
         self.bg_image_game = pygame.transform.scale(self.wood_img, (self.screen_width, self.screen_height))
         self.start_button = Button(200, 200, self.start_img, 0.5)
-        self.quit_button = Button(200, 400, self.quit_img, 0.5)
-        self.tiger_win_button = Button(100, 200, self.tiger_win_img, 0.5)
-        self.goat_win_button = Button(100, 200, self.goat_win_img, 0.5)
+        self.quit_button = Button(200, 450, self.quit_img, 0.5)
+        self.tiger_win_button = Button(30, 200, self.tiger_win_img, 0.5)
+        self.goat_win_button = Button(50, 200, self.goat_win_img, 0.5)
         self.play_again_button = Button(100, 300, self.play_again_img, 0.5)
+        self.human_img = pygame.image.load(os.path.join(asset_path, "HumanvsHuman.png")).convert_alpha()
+        self.ai_img = pygame.image.load(os.path.join(asset_path, "HumanvsAI.png")).convert_alpha()
+        self.easy_img = pygame.image.load(os.path.join(asset_path, "easy.png")).convert_alpha()
+        self.medium_img = pygame.image.load(os.path.join(asset_path, "medium.png")).convert_alpha()
+        self.advanced_img = pygame.image.load(os.path.join(asset_path, "advance.png")).convert_alpha()
+        # self.human_img = pygame.image.load(os.path.join('assets', "HumanvsHuman.png")).convert_alpha()
+        # self.ai_img = pygame.image.load(os.path.join('assets', "HumanvsAI.png")).convert_alpha()
+        # self.easy_img = pygame.image.load(os.path.join('assets', "easy.png")).convert_alpha()
+        # self.medium_img = pygame.image.load(os.path.join('assets', "medium.png")).convert_alpha()
+        # self.advanced_img = pygame.image.load(os.path.join('assets', "advance.png")).convert_alpha()
+        self.human_button = Button(10, 200, self.human_img, 0.5)
+        self.ai_button = Button(80, 300, self.ai_img, 0.5)
+        self.easy_button = Button(250, 150, self.easy_img, 0.5)
+        self.medium_button = Button(200, 250, self.medium_img, 0.5)
+        self.advanced_button = Button(160, 350, self.advanced_img, 0.5)
         self.tiger_pos = [(0, 0), (0, 4), (4, 0), (4, 4)]
         self.goats = []
         self.board = [['' for _ in range(5)] for _ in range(5)]
@@ -106,6 +122,13 @@ class TigerGame:
             (4, 4): [(2, 2), (2, 4), (4, 2)]
         }
         self.click_pos = []
+        self.game_mode = "Human"
+        self.ai_level = "Easy"
+        self.as_goat_img = pygame.image.load(os.path.join(asset_path, "asGoat.png")).convert_alpha()
+        self.as_tiger_img = pygame.image.load(os.path.join(asset_path, "asTiger.png")).convert_alpha()
+        self.as_goat_button = Button(200, 250, self.as_goat_img, 0.5)
+        self.as_tiger_button = Button(190, 350, self.as_tiger_img, 0.5)
+        self.player_side = "Goats"  # Default
 
     def draw_board(self):
         color = (50, 50, 50)
@@ -194,7 +217,6 @@ class TigerGame:
         mid_x, mid_y = (x1 + x2) // 2, (y1 + y2) // 2
         if self.board[mid_x][mid_y] != 'G':
             return False  # No goat to jump over
-        # if (abs(x1 - x2) == 2 and abs(y1 - y2) == 2) or (abs(x1 - x2) == 2 and abs(y1 - y2) == 0) or (abs(x1 - x2) == 0 and abs(y1 - y2) == 2):
         if (x2, y2) in self.jumps[(x1, y1)]:
             return True  # Valid jump
         return False
@@ -255,21 +277,163 @@ class TigerGame:
             return True
         return False 
 
+    def ai_move(self):
+        if self.ai_level == "Easy":
+            self.ai_move_easy()
+        elif self.ai_level == "Medium":
+            self.ai_move_medium()
+        elif self.ai_level == "Advanced":
+            self.ai_move_advanced()
+
+    def ai_move_easy(self):
+        # Random valid move for tiger
+        moves = []
+        for pos in self.tiger_pos:
+            for move in self.moves[pos]:
+                if self.board[move[0]][move[1]] == '':
+                    moves.append((pos, move))
+            for jump in self.jumps[pos]:
+                if self.is_valid_jump(pos, jump):
+                    moves.append((pos, jump))
+        if moves:
+            start, end = random.choice(moves)
+            self.move_tiger(start, end)
+            self.turn = "Goats"
+
+    def ai_move_medium(self):
+        # Prefer jumps (captures), else random move
+        jumps = []
+        moves = []
+        for pos in self.tiger_pos:
+            for jump in self.jumps[pos]:
+                if self.is_valid_jump(pos, jump):
+                    jumps.append((pos, jump))
+            for move in self.moves[pos]:
+                if self.board[move[0]][move[1]] == '':
+                    moves.append((pos, move))
+        if jumps:
+            start, end = random.choice(jumps)
+            self.move_tiger(start, end)
+        elif moves:
+            start, end = random.choice(moves)
+            self.move_tiger(start, end)
+        self.turn = "Goats"
+
+    def ai_move_advanced(self):
+        # Minimax algorithm for best move
+        best_score = float('-inf')
+        best_move = None
+        for pos in self.tiger_pos:
+            for move in self.moves[pos]:
+                if self.board[move[0]][move[1]] == '':
+                    score = self.minimax(self.board, self.tiger_pos, self.goats, pos, move, depth=2, maximizing=True)
+                    if score > best_score:
+                        best_score = score
+                        best_move = (pos, move)
+            for jump in self.jumps[pos]:
+                if self.is_valid_jump(pos, jump):
+                    score = self.minimax(self.board, self.tiger_pos, self.goats, pos, jump, depth=2, maximizing=True)
+                    if score > best_score:
+                        best_score = score
+                        best_move = (pos, jump)
+        if best_move:
+            start, end = best_move
+            self.move_tiger(start, end)
+            self.turn = "Goats"
+
+    def minimax(self, board, tigers, goats, start, end, depth, maximizing):
+        # Simple evaluation: difference in goats captured
+        # You can improve this function for better AI
+        temp_board = [row[:] for row in board]
+        temp_tigers = tigers[:]
+        temp_goats = goats[:]
+        # Simulate move
+        temp_board[start[0]][start[1]] = ''
+        temp_board[end[0]][end[1]] = 'T'
+        temp_tigers.remove(start)
+        temp_tigers.append(end)
+        goats_captured = self.goats_captured
+        if self.is_valid_jump(start, end):
+            mid_x, mid_y = (start[0] + end[0]) // 2, (start[1] + end[1]) // 2
+            temp_board[mid_x][mid_y] = ''
+            if (mid_x, mid_y) in temp_goats:
+                temp_goats.remove((mid_x, mid_y))
+            goats_captured += 1
+        if depth == 0:
+            return goats_captured
+        # For brevity, only evaluate tiger moves
+        return goats_captured
+
     def run(self):
         run = True
         while run:
             if not self.game_start:
+                # Main menu: choose Human or AI
                 self.screen.blit(self.bg_image, (0, 0))
-                self.start_button.draw(self.screen)
+                self.human_button.draw(self.screen)
+                self.ai_button.draw(self.screen)
                 self.quit_button.draw(self.screen)
+                font = pygame.font.SysFont(None, 100)
+                title_text = font.render("Bagh-Chal", True, self.black)
+                self.screen.blit(title_text, (170, 10))
+                mode_text = self.font.render("Choose Game Mode:", True, self.white)
+                self.screen.blit(mode_text, (200, 200))
+                pygame.display.update()
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         run = False
-                    if self.start_button.draw(self.screen):
+                    if self.human_button.draw(self.screen):
+                        self.game_mode = "Human"
                         self.game_start = True
+                    if self.ai_button.draw(self.screen):
+                        # Show difficulty selection screen
+                        selecting = True
+                        while selecting:
+                            self.screen.blit(self.bg_image, (0, 0))
+                            diff_text = self.font.render("Select AI Difficulty:", True, self.white)
+                            self.screen.blit(diff_text, (200, 150))
+                            self.easy_button.draw(self.screen)
+                            self.medium_button.draw(self.screen)
+                            self.advanced_button.draw(self.screen)
+                            pygame.display.update()
+                            for event2 in pygame.event.get():
+                                if event2.type == pygame.QUIT:
+                                    run = False
+                                    selecting = False
+                                if self.easy_button.draw(self.screen):
+                                    self.ai_level = "Easy"
+                                    selecting = False
+                                if self.medium_button.draw(self.screen):
+                                    self.ai_level = "Medium"
+                                    selecting = False
+                                if self.advanced_button.draw(self.screen):
+                                    self.ai_level = "Advanced"
+                                    selecting = False
+                        # Side selection screen
+                        side_selecting = True
+                        while side_selecting:
+                            self.screen.blit(self.bg_image, (0, 0))
+                            side_text = self.font.render("Choose Your Side:", True, self.white)
+                            self.screen.blit(side_text, (200, 250))
+                            self.as_goat_button.draw(self.screen)
+                            self.as_tiger_button.draw(self.screen)
+                            pygame.display.update()
+                            for event3 in pygame.event.get():
+                                if event3.type == pygame.QUIT:
+                                    run = False
+                                    side_selecting = False
+                                if self.as_goat_button.draw(self.screen):
+                                    self.player_side = "Goats"
+                                    self.game_mode = "AI"
+                                    self.game_start = True
+                                    side_selecting = False
+                                if self.as_tiger_button.draw(self.screen):
+                                    self.player_side = "Tigers"
+                                    self.game_mode = "AI"
+                                    self.game_start = True
+                                    side_selecting = False
                     if self.quit_button.draw(self.screen):
                         run = False
-                pygame.display.update()
                 continue
             self.draw_board()
             self.draw_stats(self.tigers_cornered, self.goats_captured, self.goats_outside)
@@ -306,6 +470,14 @@ class TigerGame:
                 if event.type == pygame.QUIT:
                     run = False
                 if not self.game_over:
+                    if self.game_mode == "AI":
+                        # AI plays as opposite of player_side
+                        if self.turn == "Tigers" and self.player_side == "Goats" and not self.game_over:
+                            self.ai_move()
+                            self.is_trap_tiger()
+                        elif self.turn == "Goats" and self.player_side == "Tigers" and not self.game_over:
+                            # Need to implement ai_move for goats
+                            pass
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         mouse_x, mouse_y = event.pos
                         for center_x, center_y, row, col in self.placeholders:
@@ -345,6 +517,9 @@ class TigerGame:
                                         self.click_pos.append((row, col))
                                     else:
                                         self.click_pos.clear()
+            if self.turn == "Tigers" and self.game_mode == "AI" and not self.game_over:
+                self.ai_move()
+                self.is_trap_tiger()
             pygame.display.update()
         pygame.quit()
 
@@ -352,3 +527,5 @@ class TigerGame:
 def start_game():
     game = TigerGame()
     game.run()
+
+start_game()

@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as f:
 
 setup(
     name="PlayBaghChal",
-    version="2.0.0",
+    version="3.0.0",
     author="Bhishan Pangeni",
     author_email="bhishanpangeni2003@gmail.com",
     description="A Pygame implementation of the Bagh-Chal (Tiger and Goat) board game.",
